@@ -319,7 +319,7 @@ def get_project_tree():
         # Run tree command with specific formatting
         try:
             tree_result = subprocess.run(
-                ['tree', '-L', '3', '-I', 'node_modules|.git|__pycache__|*.pyc'], 
+                ['tree', '-I', 'node_modules|.git|__pycache__|*.pyc'], 
                 cwd=current_dir, 
                 capture_output=True, 
                 text=True
@@ -333,7 +333,7 @@ def get_project_tree():
         
         # Fallback to find command if tree is not available
         find_result = subprocess.run(
-            ['find', '.', '-maxdepth', '3', 
+            ['find', '.', 
              '-not', '-path', '*/node_modules/*',
              '-not', '-path', '*/.git*', 
              '-not', '-path', '*/__pycache__*'], 
