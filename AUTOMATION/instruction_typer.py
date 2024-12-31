@@ -38,6 +38,7 @@ class InstructionTyper:
         self.type_cooldown = 1  # Seconds between typing attempts
         self.last_motion_time = time.time()
         self.last_frame = None
+        self.completion_time = None  # Time when project reached 100%
         
         # Capture the initial directory where the script was first executed
         self.initial_execution_dir = os.environ.get('INITIAL_EXECUTION_DIR', os.getcwd())
@@ -250,6 +251,29 @@ class InstructionTyper:
         except Exception as e:
             logging.error(f"Error typing instruction: {str(e)}")
     
+    def check_project_completion(self):
+        """Check if project is 100% complete and track time."""
+        try:
+            roadmap_path = os.path.join(self.initial_execution_dir, 'ROAD_MAP.md')
+            if os.path.exists(roadmap_path):
+                with open(roadmap_path, 'r') as f:
+                    first_line = f.readline().strip()
+                    try:
+                        percentage = int(first_line.replace('% complete', '').strip())
+                        if percentage >= 100:
+                            if self.completion_time is None:
+                                self.completion_time = time.time()
+                                logging.info("Project reached 100% completion. Timer started.")
+                            elif time.time() - self.completion_time >= 3600:  # 1 hour = 3600 seconds
+                                logging.info("1 hour passed since 100% completion. Stopping automation.")
+                                return True
+                    except ValueError:
+                        pass
+            return False
+        except Exception as e:
+            logging.error(f"Error checking project completion: {str(e)}")
+            return False
+    
     def run(self):
         """Main loop to check motion status and type instructions."""
         try:
@@ -257,6 +281,10 @@ class InstructionTyper:
             self.create_instructions_file()
             
             while not should_stop():
+                # Check if it's time to stop due to project completion
+                if self.check_project_completion():
+                    break
+                    
                 current_time = time.time()
                 if current_time - self.last_check_time >= self.check_interval:
                     self.last_check_time = current_time
@@ -266,7 +294,7 @@ class InstructionTyper:
                 
                 time.sleep(0.1)
             
-            logging.info("Instruction typer stopped by kill switch")
+            logging.info("Instruction typer stopped")
                 
         except KeyboardInterrupt:
             logging.info("Instruction typer stopped by user")
