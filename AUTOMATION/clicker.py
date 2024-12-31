@@ -3,7 +3,10 @@ import os
 import time
 import subprocess
 import logging
+from datetime import datetime
 from kill_switch import should_stop
+from AppKit import NSScreen
+import pyautogui  # Import PyAutoGUI
 
 # Set up logging
 log_dir = os.path.expanduser("~/automation_logs")
@@ -30,34 +33,50 @@ class Clicker:
         logging.info(f"Working directory: {self.working_dir}")
         logging.info(f"Click signal file: {self.click_signal_file}")
     
-    def hidden_click(self, x, y):
-        """Use AppleScript to perform a hidden click"""
+    def get_screen_dimensions(self):
+        """Get the main screen dimensions using PyObjC"""
         try:
-            script = f'''
-            tell application "System Events"
-                click at {{x:{x}, y:{y}}}
-            end tell
-            '''
-            subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
-            logging.info(f"Hidden click at {x}, {y}")
+            main_screen = NSScreen.mainScreen()
+            frame = main_screen.frame()
+            return int(frame.size.width), int(frame.size.height)
         except Exception as e:
-            logging.error(f"Error in hidden click: {str(e)}")
+            logging.warning(f"Failed to get screen dimensions using PyObjC: {str(e)}")
+            return pyautogui.size()  # Use PyAutoGUI's method as a fallback
+    
+    def click_and_press(self):
+        """Click in the middle of the right third of the screen and press Command+Enter"""
+        try:
+            # Get screen dimensions using PyAutoGUI
+            width, height = self.get_screen_dimensions()
+            
+            # Calculate position in right third
+            right_third_x = int(width * 0.83)  # Positioned at 83% of screen width
+            middle_y = int(height * 0.5)       # Middle of screen height
+            
+            logging.debug(f"Screen dimensions: {width}x{height}")
+            logging.debug(f"Calculated click position: ({right_third_x}, {middle_y})")
+            
+            # Move the mouse to the calculated position with a small duration for smoothness
+            pyautogui.moveTo(right_third_x, middle_y, duration=0.2)
+            logging.debug("Mouse moved to the calculated position")
+            
+            # Perform the mouse click
+            pyautogui.click()
+            logging.debug("Mouse click performed")
+            
+            # Press Command+Enter
+            pyautogui.hotkey('command', 'enter')
+            logging.info(f"Clicked at right third ({right_third_x}, {middle_y}) and pressed Command+Enter")
+                
+        except Exception as e:
+            logging.error(f"Error in click action: {str(e)}")
+            logging.debug(f"Full error details: {repr(e)}")
     
     def process_click_positions(self):
-        """Read and process click positions from the signal file."""
+        """Process click signals - triggers the right-third click and Command+Enter."""
         try:
             if os.path.exists(self.click_signal_file):
-                with open(self.click_signal_file, "r") as f:
-                    positions = []
-                    for line in f:
-                        x, y = map(int, line.strip().split(","))
-                        positions.append((x, y))
-                
-                if positions:
-                    logging.info(f"Clicking {len(positions)} positions")
-                    for x, y in positions:
-                        self.hidden_click(x, y)
-                        time.sleep(0.2)  # Small delay between clicks
+                self.click_and_press()
                 
                 try:
                     os.remove(self.click_signal_file)
@@ -90,4 +109,4 @@ class Clicker:
 
 if __name__ == "__main__":
     clicker = Clicker()
-    clicker.run() 
+    clicker.run()

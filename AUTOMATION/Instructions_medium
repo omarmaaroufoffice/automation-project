@@ -5,53 +5,65 @@ This is your project tree structure make sure it is correct and match it with th
 .
 ├── ROAD_MAP.md
 ├── client
-│   ├── node_modules
-│   │   ├── @emotion
-│   │   ├── @tanstack
-│   │   ├── @types
-│   │   ├── camelize
-│   │   ├── css-color-keywords
-│   │   ├── css-to-react-native
-│   │   ├── csstype
-│   │   ├── framer-motion
-│   │   ├── hoist-non-react-statics
-│   │   ├── js-tokens
-│   │   ├── loose-envify
-│   │   ├── motion-dom
-│   │   ├── motion-utils
-│   │   ├── nanoid
-│   │   ├── picocolors
-│   │   ├── postcss
-│   │   ├── postcss-value-parser
-│   │   ├── react
-│   │   ├── react-dom
-│   │   ├── react-is
-│   │   ├── scheduler
-│   │   ├── shallowequal
-│   │   ├── source-map-js
-│   │   ├── styled-components
-│   │   ├── stylis
-│   │   ├── tslib
-│   │   └── typescript
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── public
 │   │   ├── fonts
 │   │   ├── images
+│   │   │   ├── backgrounds
+│   │   │   ├── characters
+│   │   │   ├── icons
+│   │   │   └── tutorials
 │   │   ├── index.html
 │   │   ├── manifest.json
 │   │   └── sounds
 │   ├── src
 │   │   ├── App.tsx
 │   │   ├── components
+│   │   │   ├── auth
+│   │   │   │   ├── login_form.tsx
+│   │   │   │   └── register_form.tsx
+│   │   │   ├── canvas
+│   │   │   │   └── coloring_canvas.tsx
+│   │   │   ├── layout
+│   │   │   ├── parent
+│   │   │   │   ├── child_account_manager.tsx
+│   │   │   │   └── child_progress.tsx
+│   │   │   ├── shared
+│   │   │   ├── templates
+│   │   │   │   ├── template_form.tsx
+│   │   │   │   ├── template_grid.tsx
+│   │   │   │   └── template_list.tsx
+│   │   │   └── tools
+│   │   │       ├── color_palette.tsx
+│   │   │       └── tools_panel.tsx
 │   │   ├── contexts
+│   │   │   ├── auth_context.tsx
+│   │   │   └── canvas_context.tsx
 │   │   ├── hooks
 │   │   ├── index.tsx
 │   │   ├── pages
+│   │   │   ├── admin
+│   │   │   │   └── template_management.tsx
+│   │   │   ├── coloring_page.tsx
+│   │   │   ├── login_page.tsx
+│   │   │   ├── parent_dashboard.tsx
+│   │   │   ├── register_page.tsx
+│   │   │   └── template_selection.tsx
+│   │   ├── routes
+│   │   │   └── routes.tsx
 │   │   ├── services
+│   │   │   ├── api_client.ts
+│   │   │   ├── artwork_service.ts
+│   │   │   ├── auth_service.ts
+│   │   │   └── template_service.ts
 │   │   ├── styles
+│   │   │   ├── global.styles.ts
+│   │   │   └── theme.ts
 │   │   ├── types
+│   │   │   └── canvas.types.ts
 │   │   └── utils
+│   │       └── canvas_utils.ts
 │   ├── tests
 │   └── tsconfig.json
 ├── database
@@ -59,175 +71,26 @@ This is your project tree structure make sure it is correct and match it with th
 ├── docs
 ├── initial_instruction.txt
 └── server
-    ├── node_modules
-    │   ├── @cspotcode
-    │   ├── @jridgewell
-    │   ├── @mongodb-js
-    │   ├── @tsconfig
-    │   ├── @types
-    │   ├── accepts
-    │   ├── acorn
-    │   ├── acorn-walk
-    │   ├── anymatch
-    │   ├── arg
-    │   ├── array-flatten
-    │   ├── balanced-match
-    │   ├── bcryptjs
-    │   ├── binary-extensions
-    │   ├── body-parser
-    │   ├── brace-expansion
-    │   ├── braces
-    │   ├── bson
-    │   ├── buffer-equal-constant-time
-    │   ├── buffer-from
-    │   ├── bytes
-    │   ├── call-bind-apply-helpers
-    │   ├── call-bound
-    │   ├── chokidar
-    │   ├── concat-map
-    │   ├── content-disposition
-    │   ├── content-type
-    │   ├── cookie
-    │   ├── cookie-signature
-    │   ├── cors
-    │   ├── create-require
-    │   ├── debug
-    │   ├── depd
-    │   ├── destroy
-    │   ├── diff
-    │   ├── dotenv
-    │   ├── dunder-proto
-    │   ├── dynamic-dedupe
-    │   ├── ecdsa-sig-formatter
-    │   ├── ee-first
-    │   ├── encodeurl
-    │   ├── es-define-property
-    │   ├── es-errors
-    │   ├── es-object-atoms
-    │   ├── escape-html
-    │   ├── etag
-    │   ├── express
-    │   ├── fill-range
-    │   ├── finalhandler
-    │   ├── forwarded
-    │   ├── fresh
-    │   ├── fs.realpath
-    │   ├── function-bind
-    │   ├── get-intrinsic
-    │   ├── glob
-    │   ├── glob-parent
-    │   ├── gopd
-    │   ├── has-symbols
-    │   ├── hasown
-    │   ├── http-errors
-    │   ├── iconv-lite
-    │   ├── inflight
-    │   ├── inherits
-    │   ├── ipaddr.js
-    │   ├── is-binary-path
-    │   ├── is-core-module
-    │   ├── is-extglob
-    │   ├── is-glob
-    │   ├── is-number
-    │   ├── jsonwebtoken
-    │   ├── jwa
-    │   ├── jws
-    │   ├── kareem
-    │   ├── lodash.includes
-    │   ├── lodash.isboolean
-    │   ├── lodash.isinteger
-    │   ├── lodash.isnumber
-    │   ├── lodash.isplainobject
-    │   ├── lodash.isstring
-    │   ├── lodash.once
-    │   ├── make-error
-    │   ├── math-intrinsics
-    │   ├── media-typer
-    │   ├── memory-pager
-    │   ├── merge-descriptors
-    │   ├── methods
-    │   ├── mime
-    │   ├── mime-db
-    │   ├── mime-types
-    │   ├── minimatch
-    │   ├── minimist
-    │   ├── mkdirp
-    │   ├── mongodb
-    │   ├── mongodb-connection-string-url
-    │   ├── mongoose
-    │   ├── mpath
-    │   ├── mquery
-    │   ├── ms
-    │   ├── negotiator
-    │   ├── normalize-path
-    │   ├── object-assign
-    │   ├── object-inspect
-    │   ├── on-finished
-    │   ├── once
-    │   ├── parseurl
-    │   ├── path-is-absolute
-    │   ├── path-parse
-    │   ├── path-to-regexp
-    │   ├── picomatch
-    │   ├── proxy-addr
-    │   ├── punycode
-    │   ├── qs
-    │   ├── range-parser
-    │   ├── raw-body
-    │   ├── readdirp
-    │   ├── resolve
-    │   ├── rimraf
-    │   ├── safe-buffer
-    │   ├── safer-buffer
-    │   ├── semver
-    │   ├── send
-    │   ├── serve-static
-    │   ├── setprototypeof
-    │   ├── side-channel
-    │   ├── side-channel-list
-    │   ├── side-channel-map
-    │   ├── side-channel-weakmap
-    │   ├── sift
-    │   ├── source-map
-    │   ├── source-map-support
-    │   ├── sparse-bitfield
-    │   ├── statuses
-    │   ├── strip-bom
-    │   ├── strip-json-comments
-    │   ├── supports-preserve-symlinks-flag
-    │   ├── to-regex-range
-    │   ├── toidentifier
-    │   ├── tr46
-    │   ├── tree-kill
-    │   ├── ts-node
-    │   ├── ts-node-dev
-    │   ├── tsconfig
-    │   ├── type-is
-    │   ├── typescript
-    │   ├── undici-types
-    │   ├── unpipe
-    │   ├── utils-merge
-    │   ├── v8-compile-cache-lib
-    │   ├── vary
-    │   ├── webidl-conversions
-    │   ├── whatwg-url
-    │   ├── wrappy
-    │   ├── xtend
-    │   └── yn
     ├── package-lock.json
     ├── package.json
     ├── src
     │   ├── controllers
+    │   │   └── template_controller.ts
     │   ├── middleware
+    │   │   └── auth_middleware.ts
     │   ├── models
+    │   │   ├── artwork.model.ts
+    │   │   ├── template.model.ts
+    │   │   └── user.model.ts
     │   ├── routes
+    │   │   └── template_routes.ts
     │   ├── server.ts
     │   ├── services
     │   └── utils
     ├── tests
     └── tsconfig.json
 
-211 directories, 13 files
+41 directories, 46 files
 
 Verify that this tree structure accurately represents your project's organization.
 Ensure each directory and file serves a clear and documented purpose.
