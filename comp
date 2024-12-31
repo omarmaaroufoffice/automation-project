@@ -3,11 +3,17 @@
 # Capture the directory where comp was initially executed
 export INITIAL_EXECUTION_DIR="$PWD"
 
-# Prevent multiple instances
-if [ -f "/tmp/comp_running" ]; then
+# Check if a tmux session actually exists
+EXISTING_SESSIONS=$(tmux list-sessions 2>/dev/null)
+
+# Prevent multiple instances only if a real tmux session exists
+if [ -n "$EXISTING_SESSIONS" ] && [ -f "/tmp/comp_running" ]; then
     echo "Automation is already running. Use the existing tmux session."
     exit 1
 fi
+
+# Remove any stale lock files
+rm -f /tmp/comp_running
 
 # Create a lock file
 touch /tmp/comp_running
