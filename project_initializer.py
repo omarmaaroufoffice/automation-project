@@ -107,19 +107,31 @@ def copy_associated_files():
             'AUTOMATION',  # Copy entire AUTOMATION directory
             os.path.join('AUTOMATION', 'kill_switch.py'),
             os.path.join('AUTOMATION', 'kill_automation.sh'),
-            os.path.join('AUTOMATION', 'run_automation.py')
+            os.path.join('AUTOMATION', 'run_automation.py'),
+            os.path.join('AUTOMATION', 'motion_detector.py'),
+            os.path.join('AUTOMATION', 'blue_detector.py'),
+            os.path.join('AUTOMATION', 'clicker.py'),
+            os.path.join('AUTOMATION', 'instruction_typer.py')
         ]
         
         # Current working directory
         current_dir = os.getcwd()
         
+        # Ensure AUTOMATION directory exists
+        automation_dest_dir = os.path.join(current_dir, 'AUTOMATION')
+        os.makedirs(automation_dest_dir, exist_ok=True)
+        
         for item in associated_items:
+            # Full source path
             src_path = os.path.join(SCRIPT_DIR, item)
+            
+            # Full destination path
             dest_path = os.path.join(current_dir, item)
             
+            # Check if source exists
             if os.path.exists(src_path):
+                # If it's a directory, use copytree
                 if os.path.isdir(src_path):
-                    # Copy entire directory
                     import shutil
                     shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
                     print(f"Copied directory: {item}")
@@ -128,6 +140,7 @@ def copy_associated_files():
                     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
                     
                     # Copy individual file
+                    import shutil
                     shutil.copy2(src_path, dest_path)
                     print(f"Copied file: {item}")
             else:
