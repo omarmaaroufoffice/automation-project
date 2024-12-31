@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+~/automation_logs/
+
+# Temporary files
+motion_status
+click_positions
+KILL_SWITCH
+
+# macOS
+.DS_Store 
