@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Load pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv init --path)"
+
+# Activate Python environment
+pyenv shell 3.10.0
+
+# Path to the global Python kill script
+KILL_SCRIPT="/Users/omarmaarouf/werfef/global_python_kill.py"
+
+# Run the kill script with optional force flag
+python "$KILL_SCRIPT" "$@" 

@@ -6,9 +6,13 @@ import pyperclip
 import time
 import subprocess
 
-# Hardcoded paths
+# Ensure the script can find its associated files
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(SCRIPT_DIR)
+
+# Hardcoded paths with absolute references
 PASTE_POSITION = (1306, 1029)  # Updated with recorded position
-AUTOMATION_SCRIPT = "/Users/omarmaarouf/werfef/AUTOMATION/run_automation.py"
+AUTOMATION_SCRIPT = os.path.join(SCRIPT_DIR, 'AUTOMATION', 'run_automation.py')
 
 def check_roadmap():
     """Check if ROAD_MAP.md exists in the current directory."""
@@ -133,10 +137,55 @@ def get_project_info():
         print("\nFailed to paste automatically. The text has been saved to initial_instruction.txt")
         print("You can manually copy and paste it from there.")
 
+def copy_associated_files():
+    """
+    Copy associated files to the current project directory.
+    Ensures all necessary files are available for the new project.
+    """
+    try:
+        # List of associated files and directories to copy
+        associated_items = [
+            'AUTOMATION',  # Copy entire AUTOMATION directory
+            os.path.join('AUTOMATION', 'kill_switch.py'),
+            os.path.join('AUTOMATION', 'kill_automation.sh'),
+            os.path.join('AUTOMATION', 'run_automation.py')
+        ]
+        
+        # Current working directory
+        current_dir = os.getcwd()
+        
+        for item in associated_items:
+            src_path = os.path.join(SCRIPT_DIR, item)
+            dest_path = os.path.join(current_dir, item)
+            
+            if os.path.exists(src_path):
+                if os.path.isdir(src_path):
+                    # Copy entire directory
+                    import shutil
+                    shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
+                    print(f"Copied directory: {item}")
+                else:
+                    # Ensure destination directory exists
+                    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+                    
+                    # Copy individual file
+                    shutil.copy2(src_path, dest_path)
+                    print(f"Copied file: {item}")
+            else:
+                print(f"Warning: {item} not found in source directory")
+        
+        return True
+    except Exception as e:
+        print(f"Error copying associated files: {e}")
+        return False
+
 def main():
     # Get current directory
     current_dir = os.getcwd()
     print(f"\nChecking project setup in: {current_dir}")
+    
+    # Copy associated files
+    copy_associated_files()
     
     # Check if ROAD_MAP.md exists
     if not check_roadmap():
