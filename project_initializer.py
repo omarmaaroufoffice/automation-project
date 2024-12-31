@@ -74,6 +74,20 @@ def get_project_info():
         print("\nFailed to paste automatically. The text has been saved to initial_instruction.txt")
         print("You can manually copy and paste it from there.")
 
+def create_roadmap():
+    """Create ROAD_MAP.md file if it doesn't exist."""
+    if not check_roadmap():
+        with open("ROAD_MAP.md", "w") as f:
+            f.write("0% complete\n\n# Project Roadmap\n")
+        print("Created ROAD_MAP.md file.")
+        
+        # Append the do not delete line
+        with open("ROAD_MAP.md", "a") as f:
+            f.write("\n\n#Do not delete anything above this line or change except the first line for the percentage complete.#")
+        
+        return True
+    return False
+
 def main():
     # Get current directory
     current_dir = os.getcwd()
