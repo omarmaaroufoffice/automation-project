@@ -98,58 +98,10 @@ def get_project_info():
 
 def copy_associated_files():
     """
-    Copy associated files to the current project directory.
-    Ensures all necessary files are available for the new project.
+    No file copying needed. 
+    Scripts will run from their original locations.
     """
-    try:
-        # List of associated files and directories to copy
-        associated_items = [
-            'AUTOMATION',  # Copy entire AUTOMATION directory
-            os.path.join('AUTOMATION', 'kill_switch.py'),
-            os.path.join('AUTOMATION', 'kill_automation.sh'),
-            os.path.join('AUTOMATION', 'run_automation.py'),
-            os.path.join('AUTOMATION', 'motion_detector.py'),
-            os.path.join('AUTOMATION', 'blue_detector.py'),
-            os.path.join('AUTOMATION', 'clicker.py'),
-            os.path.join('AUTOMATION', 'instruction_typer.py')
-        ]
-        
-        # Current working directory
-        current_dir = os.getcwd()
-        
-        # Ensure AUTOMATION directory exists
-        automation_dest_dir = os.path.join(current_dir, 'AUTOMATION')
-        os.makedirs(automation_dest_dir, exist_ok=True)
-        
-        for item in associated_items:
-            # Full source path
-            src_path = os.path.join(SCRIPT_DIR, item)
-            
-            # Full destination path
-            dest_path = os.path.join(current_dir, item)
-            
-            # Check if source exists
-            if os.path.exists(src_path):
-                # If it's a directory, use copytree
-                if os.path.isdir(src_path):
-                    import shutil
-                    shutil.copytree(src_path, dest_path, dirs_exist_ok=True)
-                    print(f"Copied directory: {item}")
-                else:
-                    # Ensure destination directory exists
-                    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-                    
-                    # Copy individual file
-                    import shutil
-                    shutil.copy2(src_path, dest_path)
-                    print(f"Copied file: {item}")
-            else:
-                print(f"Warning: {item} not found in source directory")
-        
-        return True
-    except Exception as e:
-        print(f"Error copying associated files: {e}")
-        return False
+    return True
 
 def start_automation():
     """Start the automation script and attach to tmux session."""
