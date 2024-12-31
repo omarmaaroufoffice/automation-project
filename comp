@@ -58,6 +58,9 @@ while [ ! -f "ROAD_MAP.md" ]; do
     fi
 done
 
+# Add the specified line at the end of the file
+echo -e "\n###### DO NOT CHANGE OR DELETE ANYTHING ABOVE THIS LINE EXCEPT THE FIRST LINE TO UPDATE PERCENTAGE #####" >> ROAD_MAP.md
+
 # Kill existing session if it exists
 tmux kill-session -t project_setup 2>/dev/null
 
