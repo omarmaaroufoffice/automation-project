@@ -32,54 +32,6 @@ def create_roadmap():
         return True
     return False
 
-def start_automation():
-    """Start the automation script and attach to tmux session."""
-    try:
-        # Ensure the script is executable
-        os.chmod(AUTOMATION_SCRIPT, 0o755)
-        
-        # Construct the command to run in a new terminal window
-        # Uses osascript to open a new Terminal window and run the automation script
-        tmux_attach_command = (
-            'tell application "Terminal" to do script '
-            '"cd ' + os.path.dirname(AUTOMATION_SCRIPT) + ' && ' + 
-            'echo \\"Starting automation script...\\" && ' + 
-            'python ' + AUTOMATION_SCRIPT + ' && ' + 
-            'echo \\"Automation script completed.\\"'
-            '"'
-        )
-        
-        # Use subprocess to run the AppleScript with error capture
-        result = subprocess.run(['osascript', '-e', tmux_attach_command], 
-                       capture_output=True, 
-                       text=True)
-        
-        # Check for any errors in AppleScript execution
-        if result.returncode != 0:
-            print("Error starting automation script:")
-            print("STDOUT:", result.stdout)
-            print("STDERR:", result.stderr)
-            return False
-        
-        print("Automation script started in a new Terminal window!")
-        
-        # Additional verification
-        time.sleep(2)  # Give a moment for the script to start
-        try:
-            # Check if tmux session exists
-            tmux_check = subprocess.run(['tmux', 'list-sessions'], 
-                                        capture_output=True, 
-                                        text=True)
-            print("Active tmux sessions:")
-            print(tmux_check.stdout)
-        except Exception as e:
-            print(f"Error checking tmux sessions: {e}")
-        
-        return True
-    except Exception as e:
-        print(f"Unexpected error starting automation script: {str(e)}")
-        return False
-
 def paste_text(text):
     """Paste text at the recorded position using clipboard."""
     try:
@@ -141,6 +93,8 @@ def get_project_info():
     else:
         print("\nFailed to paste automatically. The text has been saved to initial_instruction.txt")
         print("You can manually copy and paste it from there.")
+    
+    return full_instruction
 
 def copy_associated_files():
     """
@@ -184,6 +138,54 @@ def copy_associated_files():
         print(f"Error copying associated files: {e}")
         return False
 
+def start_automation():
+    """Start the automation script and attach to tmux session."""
+    try:
+        # Ensure the script is executable
+        os.chmod(AUTOMATION_SCRIPT, 0o755)
+        
+        # Construct the command to run in a new terminal window
+        # Uses osascript to open a new Terminal window and run the automation script
+        tmux_attach_command = (
+            'tell application "Terminal" to do script '
+            '"cd ' + os.path.dirname(AUTOMATION_SCRIPT) + ' && ' + 
+            'echo \\"Starting automation script...\\" && ' + 
+            'python ' + AUTOMATION_SCRIPT + ' && ' + 
+            'echo \\"Automation script completed.\\"'
+            '"'
+        )
+        
+        # Use subprocess to run the AppleScript with error capture
+        result = subprocess.run(['osascript', '-e', tmux_attach_command], 
+                       capture_output=True, 
+                       text=True)
+        
+        # Check for any errors in AppleScript execution
+        if result.returncode != 0:
+            print("Error starting automation script:")
+            print("STDOUT:", result.stdout)
+            print("STDERR:", result.stderr)
+            return False
+        
+        print("Automation script started in a new Terminal window!")
+        
+        # Additional verification
+        time.sleep(2)  # Give a moment for the script to start
+        try:
+            # Check if tmux session exists
+            tmux_check = subprocess.run(['tmux', 'list-sessions'], 
+                                        capture_output=True, 
+                                        text=True)
+            print("Active tmux sessions:")
+            print(tmux_check.stdout)
+        except Exception as e:
+            print(f"Error checking tmux sessions: {e}")
+        
+        return True
+    except Exception as e:
+        print(f"Unexpected error starting automation script: {str(e)}")
+        return False
+
 def main():
     # Get current directory
     current_dir = os.getcwd()
@@ -194,12 +196,20 @@ def main():
     
     # Check if ROAD_MAP.md exists
     if not check_roadmap():
+        # Get project information and paste instructions
         get_project_info()
+        
         # Create ROAD_MAP.md after getting project info
         create_roadmap()
     
-    # Start automation script
-    start_automation()
+    # Prompt user to continue to automation
+    continue_prompt = input("\nDo you want to start the automation? (yes/no): ").lower()
+    
+    if continue_prompt in ['yes', 'y']:
+        # Start automation script
+        start_automation()
+    else:
+        print("Automation not started. You can start it later using the 'comp' command.")
 
 if __name__ == "__main__":
     # Enable fail-safe
