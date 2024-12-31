@@ -48,7 +48,7 @@ class Clicker:
             return pyautogui.size()  # Use PyAutoGUI's method as a fallback
     
     def click_and_press(self):
-        """Click in the middle of the right third of the screen and press Command+Enter without moving mouse"""
+        """Click in the middle of the right third of the screen and press Command+Enter without any mouse movement"""
         try:
             # Get screen dimensions
             width, height = self.get_screen_dimensions()
@@ -60,14 +60,12 @@ class Clicker:
             logging.debug(f"Screen dimensions: {width}x{height}")
             logging.debug(f"Calculated click position: ({right_third_x}, {middle_y})")
             
-            # Store current mouse position
-            current_x, current_y = pyautogui.position()
+            # Disable mouse movement thread
+            pyautogui._mouseSettings.MoveMouseThread.move_mouse_with_thread = lambda *args, **kwargs: None
             
-            # Click at the calculated position without moving visible cursor
-            pyautogui.click(x=right_third_x, y=middle_y, _pause=False)
-            
-            # Move mouse back to original position instantly
-            pyautogui.moveTo(current_x, current_y, duration=0, _pause=False)
+            # Click at the calculated position without any mouse movement
+            pyautogui._click(x=right_third_x, y=middle_y, button='left')
+            time.sleep(0.1)
             
             # Press Command+Enter
             pyautogui.hotkey('command', 'enter', interval=0.1)

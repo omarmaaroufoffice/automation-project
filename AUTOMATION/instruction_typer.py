@@ -207,17 +207,11 @@ class InstructionTyper:
         logging.info("Hardcoded instructions generated with project tree")
     
     def click_without_moving(self, x, y):
-        """Perform a click without visibly moving the mouse cursor"""
+        """Perform a click without any mouse movement"""
         try:
-            # Store current mouse position
-            current_x, current_y = pyautogui.position()
-            
-            # Click at the specified position
-            pyautogui.click(x=x, y=y, _pause=False)
-            
-            # Move mouse back to original position instantly
-            pyautogui.moveTo(current_x, current_y, duration=0, _pause=False)
-            
+            # Use _click which performs a direct click without any mouse movement
+            pyautogui._mouseSettings.MoveMouseThread.move_mouse_with_thread = lambda *args, **kwargs: None
+            pyautogui._click(x=x, y=y, button='left')
         except Exception as e:
             logging.error(f"Error in invisible click: {str(e)}")
 
@@ -247,18 +241,18 @@ class InstructionTyper:
                 
                 logging.info(f"Typing instruction {self.current_instruction + 1}: {instruction[:30]}...")
                 
-                # Click to focus without moving mouse
+                # Click to focus without any mouse movement
                 self.click_without_moving(self.paste_position[0], self.paste_position[1])
-                time.sleep(0.2)  # Reduced wait time
+                time.sleep(0.2)
                 
                 # Type the instruction
                 pyperclip.copy(full_instruction)
-                time.sleep(0.1)  # Reduced wait time
+                time.sleep(0.1)
                 pyautogui.hotkey('command', 'v')
-                time.sleep(0.1)  # Reduced wait time
+                time.sleep(0.1)
                 pyautogui.press('enter')
                 
-                # Click in the middle of the screen without moving mouse
+                # Click in the middle of the screen without any mouse movement
                 screen_width, screen_height = pyautogui.size()
                 middle_x = screen_width // 2
                 middle_y = screen_height // 2
