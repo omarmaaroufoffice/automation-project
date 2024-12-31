@@ -26,10 +26,14 @@ pyenv shell 3.10.0
 
 # Absolute path to the project initializer script
 INITIALIZER_SCRIPT="/Users/omarmaarouf/werfef/project_initializer.py"
+AUTOMATION_SCRIPT="/Users/omarmaarouf/werfef/AUTOMATION/run_automation.py"
 AUTOMATION_DIR="/Users/omarmaarouf/werfef/AUTOMATION"
 
-# Ensure the script is executable
-chmod +x "$INITIALIZER_SCRIPT"
+# First, open project initializer in a new Terminal window
+osascript -e 'tell application "Terminal" to do script "cd '"$INITIAL_EXECUTION_DIR"' && python '"$INITIALIZER_SCRIPT"'"'
+
+# Wait a bit to ensure project initializer completes
+sleep 5
 
 # Kill existing session if it exists
 tmux kill-session -t project_setup 2>/dev/null
@@ -42,7 +46,7 @@ tmux split-window -v
 tmux split-window -h -t 0
 tmux split-window -h -t 2
 
-# Send commands to panes with infinite loops
+# Send commands to panes
 # Pane 0 (top left): Project Initializer
 tmux send-keys -t 0 "cd /Users/omarmaarouf/werfef && python $INITIALIZER_SCRIPT" Enter
 
