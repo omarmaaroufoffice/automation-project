@@ -29,13 +29,14 @@ INITIALIZER_SCRIPT="/Users/omarmaarouf/werfef/project_initializer.py"
 AUTOMATION_SCRIPT="/Users/omarmaarouf/werfef/AUTOMATION/run_automation.py"
 AUTOMATION_DIR="/Users/omarmaarouf/werfef/AUTOMATION"
 
-# First, open project initializer in a new Terminal window and wait for it to complete
-osascript -e 'tell application "Terminal" to do script "cd '"$INITIAL_EXECUTION_DIR"' && python '"$INITIALIZER_SCRIPT"'"'
+# Run project initializer in the current window
+cd "$INITIAL_EXECUTION_DIR" && python "$INITIALIZER_SCRIPT"
 
-# Wait for the project initializer to complete and potentially create ROAD_MAP.md
-while [ ! -f "ROAD_MAP.md" ]; do
-    sleep 1
-done
+# Check if ROAD_MAP.md was created
+if [ ! -f "ROAD_MAP.md" ]; then
+    echo "Project initialization failed or cancelled."
+    exit 1
+fi
 
 # Kill existing session if it exists
 tmux kill-session -t project_setup 2>/dev/null
