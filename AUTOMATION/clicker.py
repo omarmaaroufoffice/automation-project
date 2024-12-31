@@ -6,7 +6,11 @@ import logging
 from datetime import datetime
 from kill_switch import should_stop
 from AppKit import NSScreen
-import pyautogui  # Import PyAutoGUI
+import pyautogui
+
+# Disable PyAutoGUI's failsafe and pause features
+pyautogui.FAILSAFE = False
+pyautogui.PAUSE = 0
 
 # Set up logging
 log_dir = os.path.expanduser("~/automation_logs")
@@ -44,9 +48,9 @@ class Clicker:
             return pyautogui.size()  # Use PyAutoGUI's method as a fallback
     
     def click_and_press(self):
-        """Click in the middle of the right third of the screen and press Command+Enter"""
+        """Click in the middle of the right third of the screen and press Command+Enter without moving mouse"""
         try:
-            # Get screen dimensions using PyAutoGUI
+            # Get screen dimensions
             width, height = self.get_screen_dimensions()
             
             # Calculate position in right third
@@ -56,16 +60,17 @@ class Clicker:
             logging.debug(f"Screen dimensions: {width}x{height}")
             logging.debug(f"Calculated click position: ({right_third_x}, {middle_y})")
             
-            # Move the mouse to the calculated position with a small duration for smoothness
-            pyautogui.moveTo(right_third_x, middle_y, duration=0.2)
-            logging.debug("Mouse moved to the calculated position")
+            # Store current mouse position
+            current_x, current_y = pyautogui.position()
             
-            # Perform the mouse click
-            pyautogui.click()
-            logging.debug("Mouse click performed")
+            # Click at the calculated position without moving visible cursor
+            pyautogui.click(x=right_third_x, y=middle_y, _pause=False)
+            
+            # Move mouse back to original position instantly
+            pyautogui.moveTo(current_x, current_y, duration=0, _pause=False)
             
             # Press Command+Enter
-            pyautogui.hotkey('command', 'enter')
+            pyautogui.hotkey('command', 'enter', interval=0.1)
             logging.info(f"Clicked at right third ({right_third_x}, {middle_y}) and pressed Command+Enter")
                 
         except Exception as e:
