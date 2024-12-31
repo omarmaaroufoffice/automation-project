@@ -4,33 +4,13 @@ import sys
 import pyautogui
 import pyperclip
 import time
-import subprocess
 
-# Ensure the script can find its associated files
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(SCRIPT_DIR)
-
-# Hardcoded paths with absolute references
+# Hardcoded paste position (x, y)
 PASTE_POSITION = (1306, 1029)  # Updated with recorded position
-AUTOMATION_SCRIPT = os.path.join(SCRIPT_DIR, 'AUTOMATION', 'run_automation.py')
 
 def check_roadmap():
     """Check if ROAD_MAP.md exists in the current directory."""
     return os.path.exists("ROAD_MAP.md")
-
-def create_roadmap():
-    """Create ROAD_MAP.md file if it doesn't exist."""
-    if not check_roadmap():
-        with open("ROAD_MAP.md", "w") as f:
-            f.write("0% complete\n\n# Project Roadmap\n")
-        print("Created ROAD_MAP.md file.")
-        
-        # Append the do not delete line
-        with open("ROAD_MAP.md", "a") as f:
-            f.write("\n\n###### DO NOT CHANGE OR DELETE ANYTHING ABOVE THIS LINE EXCEPT THE FIRST LINE TO UPDATE PERCENTAGE #####")
-        
-        return True
-    return False
 
 def paste_text(text):
     """Paste text at the recorded position using clipboard."""
@@ -60,7 +40,7 @@ def get_project_info():
     
     # Standard instruction to be added
     standard_instruction = (
-        "Please create a ROAD_MAP.md file and fill it with all the necessary steps "
+       "Please create a ROAD_MAP.md file and fill it with all the necessary steps "
         "and extreme detail about what the project needs, its file structure, and "
         "its description, make sure to add a step by step enumerated full guide "
         "on how to build it, all in the ROAD_MAP.md file. "
@@ -93,71 +73,18 @@ def get_project_info():
     else:
         print("\nFailed to paste automatically. The text has been saved to initial_instruction.txt")
         print("You can manually copy and paste it from there.")
-    
-    return full_instruction
-
-def copy_associated_files():
-    """
-    No file copying needed. 
-    Scripts will run from their original locations.
-    """
-    return True
-
-def start_automation():
-    """Start the automation script and attach to tmux session."""
-    try:
-        # Ensure the script is executable
-        os.chmod(AUTOMATION_SCRIPT, 0o755)
-        
-        # Open a new Terminal window with the project initializer
-        open_terminal_command = (
-            'tell application "Terminal" to do script '
-            '"cd ' + os.path.dirname(AUTOMATION_SCRIPT) + ' && ' + 
-            'python ' + AUTOMATION_SCRIPT + '"'
-        )
-        
-        # Use subprocess to run the AppleScript with error capture
-        result = subprocess.run(['osascript', '-e', open_terminal_command], 
-                       capture_output=True, 
-                       text=True)
-        
-        # Check for any errors in AppleScript execution
-        if result.returncode != 0:
-            print("Error opening Terminal window:")
-            print("STDOUT:", result.stdout)
-            print("STDERR:", result.stderr)
-            return False
-        
-        print("Automation script started in a new Terminal window!")
-        return True
-    except Exception as e:
-        print(f"Unexpected error starting automation script: {str(e)}")
-        return False
 
 def main():
     # Get current directory
     current_dir = os.getcwd()
     print(f"\nChecking project setup in: {current_dir}")
     
-    # Copy associated files
-    copy_associated_files()
-    
     # Check if ROAD_MAP.md exists
     if not check_roadmap():
-        # Get project information and paste instructions
         get_project_info()
-        
-        # Create ROAD_MAP.md after getting project info
-        create_roadmap()
-    
-    # Prompt user to continue to automation
-    continue_prompt = input("\nDo you want to start the automation? (yes/no): ").lower()
-    
-    if continue_prompt in ['yes', 'y']:
-        # Start automation script
-        start_automation()
     else:
-        print("Automation not started. You can start it later using the 'comp' command.")
+        print("\nROAD_MAP.md already exists in this directory.")
+        print("Project is already initialized.")
 
 if __name__ == "__main__":
     # Enable fail-safe
