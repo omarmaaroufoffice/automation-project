@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Capture the directory where comp was initially executed
+export INITIAL_EXECUTION_DIR="$PWD"
+
+# Prevent multiple instances
+if [ -f "/tmp/comp_running" ]; then
+    echo "Automation is already running. Use the existing tmux session."
+    exit 1
+fi
+
+# Create a lock file
+touch /tmp/comp_running
+
+# Trap to remove lock file on exit
+trap 'rm -f /tmp/comp_running' EXIT
+
+# Load pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv init --path)"
+
+# Activate specific Python version
+pyenv shell 3.10.0
+
+# Absolute path to the project initializer script
+INITIALIZER_SCRIPT="/Users/omarmaarouf/werfef/project_initializer.py"
+AUTOMATION_DIR="/Users/omarmaarouf/werfef/AUTOMATION"
+
+# Ensure the script is executable
+chmod +x "$INITIALIZER_SCRIPT"
+
+# Kill existing session if it exists
+tmux kill-session -t project_setup 2>/dev/null
+
+# Create new tmux session
+tmux new-session -d -s project_setup
+
+# Split into four panes
+tmux split-window -v
+tmux split-window -h -t 0
+tmux split-window -h -t 2
+
+# Send commands to panes with infinite loops
+# Pane 0 (top left): Project Initializer
+tmux send-keys -t 0 "cd /Users/omarmaarouf/werfef && python $INITIALIZER_SCRIPT" Enter
+
+# Pane 1 (top right): Motion Detector
+tmux send-keys -t 1 "cd $AUTOMATION_DIR && python motion_detector.py" Enter
+
+# Pane 2 (bottom left): Blue Detector
+tmux send-keys -t 2 "cd $AUTOMATION_DIR && python blue_detector.py" Enter
+
+# Pane 3 (bottom right): Instruction Typer
+tmux send-keys -t 3 "cd $AUTOMATION_DIR && python instruction_typer.py" Enter
+
+# Attach to the session, replacing the current terminal
+tmux attach-session -t project_setup 
