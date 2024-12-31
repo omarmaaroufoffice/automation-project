@@ -24,16 +24,18 @@ eval "$(pyenv init --path)"
 # Activate specific Python version
 pyenv shell 3.10.0
 
-# Absolute path to the project initializer script
+# Absolute paths
 INITIALIZER_SCRIPT="/Users/omarmaarouf/werfef/project_initializer.py"
 AUTOMATION_SCRIPT="/Users/omarmaarouf/werfef/AUTOMATION/run_automation.py"
 AUTOMATION_DIR="/Users/omarmaarouf/werfef/AUTOMATION"
 
-# First, open project initializer in a new Terminal window
+# First, open project initializer in a new Terminal window and wait for it to complete
 osascript -e 'tell application "Terminal" to do script "cd '"$INITIAL_EXECUTION_DIR"' && python '"$INITIALIZER_SCRIPT"'"'
 
-# Wait a bit to ensure project initializer completes
-sleep 5
+# Wait for the project initializer to complete and potentially create ROAD_MAP.md
+while [ ! -f "ROAD_MAP.md" ]; do
+    sleep 1
+done
 
 # Kill existing session if it exists
 tmux kill-session -t project_setup 2>/dev/null
@@ -47,14 +49,14 @@ tmux split-window -h -t 0
 tmux split-window -h -t 2
 
 # Send commands to panes
-# Pane 0 (top left): Project Initializer
-tmux send-keys -t 0 "cd /Users/omarmaarouf/werfef && python $INITIALIZER_SCRIPT" Enter
+# Pane 0 (top left): Motion Detector
+tmux send-keys -t 0 "cd $AUTOMATION_DIR && python motion_detector.py" Enter
 
-# Pane 1 (top right): Motion Detector
-tmux send-keys -t 1 "cd $AUTOMATION_DIR && python motion_detector.py" Enter
+# Pane 1 (top right): Blue Detector
+tmux send-keys -t 1 "cd $AUTOMATION_DIR && python blue_detector.py" Enter
 
-# Pane 2 (bottom left): Blue Detector
-tmux send-keys -t 2 "cd $AUTOMATION_DIR && python blue_detector.py" Enter
+# Pane 2 (bottom left): Clicker
+tmux send-keys -t 2 "cd $AUTOMATION_DIR && python clicker.py" Enter
 
 # Pane 3 (bottom right): Instruction Typer
 tmux send-keys -t 3 "cd $AUTOMATION_DIR && python instruction_typer.py" Enter
