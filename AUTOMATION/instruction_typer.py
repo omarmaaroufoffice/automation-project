@@ -11,6 +11,10 @@ import logging
 from kill_switch import should_stop
 import subprocess
 
+# Disable PyAutoGUI's failsafe and pause features for faster operation
+pyautogui.FAILSAFE = False
+pyautogui.PAUSE = 0
+
 # Set up logging
 log_dir = os.path.expanduser("~/automation_logs")
 os.makedirs(log_dir, exist_ok=True)
@@ -202,6 +206,21 @@ class InstructionTyper:
         
         logging.info("Hardcoded instructions generated with project tree")
     
+    def click_without_moving(self, x, y):
+        """Perform a click without visibly moving the mouse cursor"""
+        try:
+            # Store current mouse position
+            current_x, current_y = pyautogui.position()
+            
+            # Click at the specified position
+            pyautogui.click(x=x, y=y, _pause=False)
+            
+            # Move mouse back to original position instantly
+            pyautogui.moveTo(current_x, current_y, duration=0, _pause=False)
+            
+        except Exception as e:
+            logging.error(f"Error in invisible click: {str(e)}")
+
     def type_instruction(self):
         """Type the next instruction when conditions are met."""
         try:
@@ -228,22 +247,22 @@ class InstructionTyper:
                 
                 logging.info(f"Typing instruction {self.current_instruction + 1}: {instruction[:30]}...")
                 
-                # Click to focus the correct window
-                pyautogui.click(self.paste_position[0], self.paste_position[1])
-                time.sleep(0.5)  # Wait for focus
+                # Click to focus without moving mouse
+                self.click_without_moving(self.paste_position[0], self.paste_position[1])
+                time.sleep(0.2)  # Reduced wait time
                 
                 # Type the instruction
                 pyperclip.copy(full_instruction)
-                time.sleep(0.2)
+                time.sleep(0.1)  # Reduced wait time
                 pyautogui.hotkey('command', 'v')
-                time.sleep(0.2)
+                time.sleep(0.1)  # Reduced wait time
                 pyautogui.press('enter')
                 
-                # Click in the middle of the screen
+                # Click in the middle of the screen without moving mouse
                 screen_width, screen_height = pyautogui.size()
                 middle_x = screen_width // 2
                 middle_y = screen_height // 2
-                pyautogui.click(middle_x, middle_y)
+                self.click_without_moving(middle_x, middle_y)
                 
                 self.current_instruction += 1
                 self.last_type_time = time.time()
