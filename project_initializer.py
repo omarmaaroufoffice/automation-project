@@ -144,43 +144,26 @@ def start_automation():
         # Ensure the script is executable
         os.chmod(AUTOMATION_SCRIPT, 0o755)
         
-        # Construct the command to run in a new terminal window
-        # Uses osascript to open a new Terminal window and run the automation script
-        tmux_attach_command = (
+        # Open a new Terminal window with the project initializer
+        open_terminal_command = (
             'tell application "Terminal" to do script '
             '"cd ' + os.path.dirname(AUTOMATION_SCRIPT) + ' && ' + 
-            'echo \\"Starting automation script...\\" && ' + 
-            'python ' + AUTOMATION_SCRIPT + ' && ' + 
-            'echo \\"Automation script completed.\\"'
-            '"'
+            'python ' + AUTOMATION_SCRIPT + '"'
         )
         
         # Use subprocess to run the AppleScript with error capture
-        result = subprocess.run(['osascript', '-e', tmux_attach_command], 
+        result = subprocess.run(['osascript', '-e', open_terminal_command], 
                        capture_output=True, 
                        text=True)
         
         # Check for any errors in AppleScript execution
         if result.returncode != 0:
-            print("Error starting automation script:")
+            print("Error opening Terminal window:")
             print("STDOUT:", result.stdout)
             print("STDERR:", result.stderr)
             return False
         
         print("Automation script started in a new Terminal window!")
-        
-        # Additional verification
-        time.sleep(2)  # Give a moment for the script to start
-        try:
-            # Check if tmux session exists
-            tmux_check = subprocess.run(['tmux', 'list-sessions'], 
-                                        capture_output=True, 
-                                        text=True)
-            print("Active tmux sessions:")
-            print(tmux_check.stdout)
-        except Exception as e:
-            print(f"Error checking tmux sessions: {e}")
-        
         return True
     except Exception as e:
         print(f"Unexpected error starting automation script: {str(e)}")
