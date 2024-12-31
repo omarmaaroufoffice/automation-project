@@ -211,8 +211,9 @@ class InstructionTyper:
         try:
             script = f'''
             tell application "System Events"
-                tell process "Finder"
-                    perform action "AXPress" of (first button whose position is {{x:{x}, y:{y}}})
+                tell application process "Cursor"
+                    set frontmost to true
+                    click at {{x:{x}, y:{y}}}
                 end tell
             end tell
             '''
@@ -246,27 +247,29 @@ class InstructionTyper:
                 
                 logging.info(f"Typing instruction {self.current_instruction + 1}: {instruction[:30]}...")
                 
-                # Click to focus without any mouse movement
-                self.click_without_moving(self.paste_position[0], self.paste_position[1])
-                time.sleep(0.2)
-                
-                # Type the instruction using AppleScript
+                # Focus Cursor app and perform actions
                 script = f'''
                 tell application "System Events"
-                    set the clipboard to "{full_instruction}"
-                    delay 0.1
-                    keystroke "v" using command down
-                    delay 0.1
-                    keystroke return
+                    tell application process "Cursor"
+                        set frontmost to true
+                        delay 0.2
+                        click at {{x:{self.paste_position[0]}, y:{self.paste_position[1]}}}
+                        delay 0.2
+                        
+                        -- Type the instruction
+                        set the clipboard to "{full_instruction}"
+                        delay 0.1
+                        keystroke "v" using command down
+                        delay 0.1
+                        keystroke return
+                        
+                        -- Click in the middle
+                        delay 0.1
+                        click at {{x:{pyautogui.size()[0] // 2}, y:{pyautogui.size()[1] // 2}}}
+                    end tell
                 end tell
                 '''
                 subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
-                
-                # Click in the middle of the screen without any mouse movement
-                screen_width, screen_height = pyautogui.size()
-                middle_x = screen_width // 2
-                middle_y = screen_height // 2
-                self.click_without_moving(middle_x, middle_y)
                 
                 self.current_instruction += 1
                 self.last_type_time = time.time()

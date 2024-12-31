@@ -60,14 +60,16 @@ class Clicker:
             logging.debug(f"Screen dimensions: {width}x{height}")
             logging.debug(f"Calculated click position: ({right_third_x}, {middle_y})")
             
-            # Use AppleScript for direct clicking without mouse movement
+            # Use AppleScript to focus Cursor app and perform actions
             script = f'''
             tell application "System Events"
-                tell process "Finder"
-                    perform action "AXPress" of (first button whose position is {{x:{right_third_x}, y:{middle_y}}})
+                tell application process "Cursor"
+                    set frontmost to true
+                    delay 0.2
+                    click at {{x:{right_third_x}, y:{middle_y}}}
+                    delay 0.2
+                    keystroke return using command down
                 end tell
-                delay 0.1
-                keystroke return using command down
             end tell
             '''
             
