@@ -38,11 +38,25 @@ AUTOMATION_DIR="/Users/omarmaarouf/werfef/AUTOMATION"
 # Run project initializer in the current window
 cd "$INITIAL_EXECUTION_DIR" && python "$INITIALIZER_SCRIPT"
 
-# Check if ROAD_MAP.md was created
-if [ ! -f "ROAD_MAP.md" ]; then
-    echo "Project initialization failed or cancelled."
-    exit 1
-fi
+# Wait for ROAD_MAP.md to be created (up to 2 minutes)
+MAX_WAIT=120  # 2 minutes in seconds
+WAIT_TIME=0
+
+while [ ! -f "ROAD_MAP.md" ]; do
+    sleep 1
+    ((WAIT_TIME++))
+    
+    # Print a waiting message every 10 seconds
+    if [ $((WAIT_TIME % 10)) -eq 0 ]; then
+        echo "Waiting for ROAD_MAP.md to be created... ($((WAIT_TIME)) seconds)"
+    fi
+    
+    # Timeout after MAX_WAIT seconds
+    if [ $WAIT_TIME -ge $MAX_WAIT ]; then
+        echo "Timeout: ROAD_MAP.md was not created within $MAX_WAIT seconds."
+        exit 1
+    fi
+done
 
 # Kill existing session if it exists
 tmux kill-session -t project_setup 2>/dev/null
