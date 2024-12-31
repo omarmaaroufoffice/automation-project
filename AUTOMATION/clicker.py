@@ -60,15 +60,18 @@ class Clicker:
             logging.debug(f"Screen dimensions: {width}x{height}")
             logging.debug(f"Calculated click position: ({right_third_x}, {middle_y})")
             
-            # Disable mouse movement thread
-            pyautogui._mouseSettings.MoveMouseThread.move_mouse_with_thread = lambda *args, **kwargs: None
+            # Use AppleScript for direct clicking without mouse movement
+            script = f'''
+            tell application "System Events"
+                tell process "Finder"
+                    perform action "AXPress" of (first button whose position is {{x:{right_third_x}, y:{middle_y}}})
+                end tell
+                delay 0.1
+                keystroke return using command down
+            end tell
+            '''
             
-            # Click at the calculated position without any mouse movement
-            pyautogui._click(x=right_third_x, y=middle_y, button='left')
-            time.sleep(0.1)
-            
-            # Press Command+Enter
-            pyautogui.hotkey('command', 'enter', interval=0.1)
+            subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
             logging.info(f"Clicked at right third ({right_third_x}, {middle_y}) and pressed Command+Enter")
                 
         except Exception as e:

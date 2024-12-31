@@ -207,11 +207,16 @@ class InstructionTyper:
         logging.info("Hardcoded instructions generated with project tree")
     
     def click_without_moving(self, x, y):
-        """Perform a click without any mouse movement"""
+        """Perform a click without any mouse movement using AppleScript"""
         try:
-            # Use _click which performs a direct click without any mouse movement
-            pyautogui._mouseSettings.MoveMouseThread.move_mouse_with_thread = lambda *args, **kwargs: None
-            pyautogui._click(x=x, y=y, button='left')
+            script = f'''
+            tell application "System Events"
+                tell process "Finder"
+                    perform action "AXPress" of (first button whose position is {{x:{x}, y:{y}}})
+                end tell
+            end tell
+            '''
+            subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
         except Exception as e:
             logging.error(f"Error in invisible click: {str(e)}")
 
@@ -245,12 +250,17 @@ class InstructionTyper:
                 self.click_without_moving(self.paste_position[0], self.paste_position[1])
                 time.sleep(0.2)
                 
-                # Type the instruction
-                pyperclip.copy(full_instruction)
-                time.sleep(0.1)
-                pyautogui.hotkey('command', 'v')
-                time.sleep(0.1)
-                pyautogui.press('enter')
+                # Type the instruction using AppleScript
+                script = f'''
+                tell application "System Events"
+                    set the clipboard to "{full_instruction}"
+                    delay 0.1
+                    keystroke "v" using command down
+                    delay 0.1
+                    keystroke return
+                end tell
+                '''
+                subprocess.run(['osascript', '-e', script], capture_output=True, text=True)
                 
                 # Click in the middle of the screen without any mouse movement
                 screen_width, screen_height = pyautogui.size()
