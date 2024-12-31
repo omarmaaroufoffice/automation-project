@@ -23,6 +23,8 @@ def create_roadmap():
     if not check_roadmap():
         with open("ROAD_MAP.md", "w") as f:
             f.write("0% complete\n\n# Project Roadmap\n")
+            # Add protection line at the end
+            f.write("\n\n###### DO NOT CHANGE OR DELETE ANYTHING ABOVE THIS LINE EXCEPT THE FIRST LINE TO UPDATE PERCENTAGE #####")
         print("Created ROAD_MAP.md file.")
         return True
     return False
